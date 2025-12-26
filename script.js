@@ -65,6 +65,124 @@ const answerValues = {
   "disagree": -1,
   "strongly-disagree": -2
 };
+    const questionAxis = {
+        q1: {x:-1,y:0},
+        q2: {x:-1,y:0},
+        q3: {x:0,y:1},
+        q4: {x:0,y:-1},
+        q5: {x:-1,y:0},
+        q6: {x:0,y:-1},
+        q7: {x:0,y:1},
+        q8: {x:0,y:1},
+        q9: {x:0,y:1},
+        q10: {x:-1,y:0},
+        q11: {x:-1,y:0},
+        q12: {x:-1,y:0},
+        q13: {x:0,y:1},
+        q14: {x:-1,y:0},
+        q15: {x:1,y:0},
+        q16: {x:0,y:1},
+        q17: {x:-1,y:0},
+        q18: {x:-1,y:0},
+        q19: {x:-1,y:0},
+        q20: {x:-1,y:0},
+        q21: {x:0,y:-1},
+        q22: {x:0,y:-1},
+        q23: {x:1,y:0},
+        q24: {x:1,y:0},
+        q25: {x:1,y:0},
+        q26: {x:0,y:-1},
+        q27: {x:1,y:0},
+        q28: {x:-1,y:0},
+        q29: {x:0,y:-1},
+        q30: {x:0,y:-1},
+        q31: {x:0,y:-1},
+        q32: {x:0,y:1},
+        q33: {x:0,y:1},
+        q34: {x:0,y:1},
+        q35: {x:-1,y:0},
+        q36: {x:0,y:1},
+        q37: {x:0,y:1},
+        q38: {x:0,y:1},
+        q39: {x:0,y:1},
+        q40: {x:0,y:1},
+        };
+
+        function calculateScore(answers) {
+        let x = 0, y = 0;
+        for (let q in questionAxis) {
+            let axis = questionAxis[q];
+            let val = answerValues[answers[q]];
+            x += (axis.x || 0) * val;
+            y += (axis.y || 0) * val;
+        }
+        return { x, y };
+        }
+
+        function setResultsBackground(x, y) {
+            const results = document.getElementById('results-section');
+            let color;
+
+            if (x < 50 && y < 50) {
+                color = '#7f3737';
+            } else if (x > 50 && y < 50) {
+                color = '#377f37';
+            } else if (x < 50 && y > 50) {
+                color = '#000000';
+            } else if (x > 50 && y > 50) {
+                color = '#37377f';
+
+        function animateResultsSectionBackground() {
+            let now = Date.now();
+            let elapsed = (now - startTime + savedOffset) % ANIMATION_DURATION;
+            let pct = (elapsed / ANIMATION_DURATION) * 100;
+            let results = document.getElementById("results-section");
+            if (results) {
+                results.style.backgroundColor = interpolateColor(headerColors, pct);
+            }
+            if (!areAllQuestionsAnswered()) {
+                requestAnimationFrame(animateResultsSectionBackground);
+            }
+        }
+
+        function areAllQuestionsAnswered() {
+            const answers = JSON.parse(localStorage.getItem('quizAnswers'));
+            if (!answers) return false;
+            for (let i = 1; i <= 40; i++) {
+                if (!answers['q' + i]) return false;
+            }
+            return true;
+        }
+
+        function updateRequiredRadios(currentIndex, sections) {
+            sections.forEach((sec, i) => {
+                sec.querySelectorAll('input[type="radio"]').forEach(radio => {
+                    radio.required = (i === currentIndex);
+                });
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const resultsSection = document.getElementById("results-section");
+            if (!resultsSection) return;
+
+            if (!areAllQuestionsAnswered()) {
+                animateResultsSectionBackground();
+            } else {
+                const answers = JSON.parse(localStorage.getItem('quizAnswers'));
+                if (!answers) return;
+                const { x, y } = calculateScore(answers);
+                setResultsBackground(x, y);
+            }
+        });
+    };
+
+        function mapToSVG(x, y, svgWidth, svgHeight, scoreRange) {
+        let svgX = ((x + scoreRange) / (2 * scoreRange)) * svgWidth;
+        let svgY = svgHeight - ((y + scoreRange) / (2 * scoreRange)) * svgHeight;
+        return { svgX, svgY };
+        };
+
     document.addEventListener("DOMContentLoaded", function () {
     let quizForm = document.getElementById('quizForm');
     if (quizForm) {
@@ -77,6 +195,7 @@ const answerValues = {
             sections_1.forEach(function (sec, i) {
                 sec.style.display = i === index ? 'block' : 'none';
             });
+            updateRequiredRadios(index, sections_1); // <-- Add this line
             localStorage.setItem('quizCurrent', index);
         }
         function nextQuestion() {
@@ -84,9 +203,9 @@ const answerValues = {
             let radios = currentSection.querySelectorAll('input[type="radio"]');
             let answered = false;
             radios.forEach(function (radio) {
-                if (radio.checked)
-                    answered = true;
+                if (radio.checked) answered = true;
             });
+            console.log('Current section:', current_1, 'Answered:', answered, 'Radios:', radios.length);
             if (!answered) {
                 alert('Please select an answer before continuing.');
                 return;
@@ -118,4 +237,4 @@ const answerValues = {
         window.prevQuestion = prevQuestion;
         showQuestion(current_1);
     }
-    );
+    )};

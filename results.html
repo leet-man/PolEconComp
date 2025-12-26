@@ -1,27 +1,105 @@
 <html>
     <head>
-        <title>Political Economy Compass</title> <!-- Title of the page displayed in the browser tab -->
-        <meta charset="UTF-8"> <!-- Character encoding for the document -->
-        <meta name="author" content="leet-man"> <!-- Author of the page for metadata purposes -->
-        <link rel="icon" type="image/svg+xml" href="Compass.svg"> <!-- Favicon for the page, displayed in the browser tab -->
-        <link rel="stylesheet" href="style.css"> <!-- Link to the external CSS file for styling the page -->
+        <title>Political Economy Compass</title>
+        <meta charset="UTF-8">
+        <meta name="author" content="leet-man">
+        <link rel="icon" type="image/svg+xml" href="Compass.svg">
+        <link rel="stylesheet" href="style.css">
     </head>
     <body>
         <header> 
-            <h1>Political Economy Compass</h1> <!-- Main title of the page -->
-            <h2>Results</h2> <!-- Subtitle indicating the current page -->
-            <nav> <!-- Navigation links to other pages -->
+            <h1>Political Economy Compass</h1>
+            <h2>Results</h2>
+            <nav>
                 <a href="home.html">Home</a>
                 <a href="quiz.html">Quiz</a>
                 <a href="results.html">Results</a>
             </nav>
         </header>
         <main>
-
+            <section id="results-section">
+                <h2>Thank you for completing the quiz! Your results come out as:</h2>
+                <div id="compass-container" style="position:relative; width:400px; height:400px;">
+                <svg id="compass-svg" width="100" height="100"></svg>
+                <div id="result-dot" style="position:absolute; width:12px; height:12px; border-radius:50%; background:red; border:2px solid #fff; pointer-events:none;"></div>
+                </div>
+            </section>
         </main>
         <footer>
-            <h2>© 2025 leet-man</h2> <!-- Footer with copyright information -->
+            <h2>© 2025 leet-man</h2>
         </footer>
-        <script src="script.js"></script> <!-- Link to the external JavaScript file for color animations -->
+        <script src="script.js">
+            const questionAxis = {
+            q1: {x:-1,y:0},
+            q2: {x:-1,y:0},
+            q3: {x:0,y:1},
+            q4: {x:0,y:-1},
+            q5: {x:-1,y:0},
+            q6: {x:0,y:-1},
+            q7: {x:0,y:1},
+            q8: {x:0,y:1},
+            q9: {x:0,y:1},
+            q10: {x:-1,y:0},
+            q11: {x:-1,y:0},
+            q12: {x:-1,y:0},
+            q13: {x:0,y:1},
+            q14: {x:-1,y:0},
+            q15: {x:1,y:0},
+            q16: {x:0,y:1},
+            q17: {x:-1,y:0},
+            q18: {x:-1,y:0},
+            q19: {x:-1,y:0},
+            q20: {x:-1,y:0},
+            q21: {x:0,y:-1},
+            q22: {x:0,y:-1},
+            q23: {x:1,y:0},
+            q24: {x:1,y:0},
+            q25: {x:1,y:0},
+            q26: {x:0,y:-1},
+            q27: {x:1,y:0},
+            q28: {x:-1,y:0},
+            q29: {x:0,y:-1},
+            q30: {x:0,y:-1},
+            q31: {x:0,y:-1},
+            q32: {x:0,y:1},
+            q33: {x:0,y:1},
+            q34: {x:0,y:1},
+            q35: {x:-1,y:0},
+            q36: {x:0,y:1},
+            q37: {x:0,y:1},
+            q38: {x:0,y:1},
+            q39: {x:0,y:1},
+            q40: {x:0,y:1},
+            };
+
+            function calculateScore(answers) {
+            let x = 0, y = 0;
+            for (let q in questionAxis) {
+                let axis = questionAxis[q];
+                let val = answerValues[answers[q]];
+                x += (axis.x || 0) * val;
+                y += (axis.y || 0) * val;
+            }
+            return { x, y };
+            }
+
+            function mapToSVG(x, y, svgWidth, svgHeight, scoreRange) {
+            let svgX = ((x + scoreRange) / (2 * scoreRange)) * svgWidth;
+            let svgY = svgHeight - ((y + scoreRange) / (2 * scoreRange)) * svgHeight;
+            return { svgX, svgY };
+           
+        window.addEventListener('DOMContentLoaded', function() {
+            const answers = JSON.parse(localStorage.getItem('quizAnswers'));
+            if (!answers) return;
+
+            const { x, y } = calculateScore(answers);
+            const { svgX, svgY } = mapToSVG(x, y, 100, 100, 20);
+
+            const dot = document.getElementById('result-dot');
+            dot.style.left = (svgX - 6) + 'px';
+            dot.style.top = (svgY - 6) + 'px';
+        });
+    }
+        </script>
     </body>
 </html>
